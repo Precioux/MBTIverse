@@ -1,7 +1,6 @@
 # MBTIverse
 
-A compact system for analyzing a news brief through **16 MBTI-style agents** plus a **Meta Reviewer**.  
-Backend: **FastAPI** (with Swagger). Frontend: **Vite + React + Tailwind**.
+Reanoning is a great functionality of LLMs that can be combined with generative technology to stimulate how humans think and react. Its always a challenge to see how people react to news for many people such as governments, politics, news agencies and social media creators and psychologists so they can plan how to handle things accordingly. With the help pf MBTI personalities which is one of the common and valid psycological way to understand human charactristics, I designed this platform so each agent can react to the input news as a person with that personality type does. I also implemented a meta reviewer agent that analyzes all reactions and reasnoning behind them and then proposes all useful information that can help user understand its society's reaction better. 
 
 ---
 
