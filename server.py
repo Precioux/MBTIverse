@@ -171,25 +171,29 @@ def _run_panel(req: MultiAgentRequest) -> PanelResponse:
     results: List[Reaction] = []
     errors: Dict[str, str] = {}
 
-    # collect all agent reactions
+    # --- Agents use whatever the client asked for (unchanged) ---
     for code in selection:
         agent = AGENTS.get(code)
         if not agent:
             errors[code] = "Agent not found."
             continue
         try:
-            out = agent.react(news_text, **params)
+            out = agent.react(news_text, **params)  # keep agent params as-is
             results.append(Reaction(personality=code, reaction=out))
         except Exception as e:
             errors[code] = f"{type(e).__name__}: {e}"
 
-    # run meta reviewer
+    # --- Meta Reviewer gets a larger cap so it doesn't truncate ---
+    meta_params = dict(params)
+    if meta_params.get("max_tokens") is None or meta_params["max_tokens"] < 1500:
+        meta_params["max_tokens"] = 1500  # raise the floor for meta only
+
     meta_text: Optional[str] = None
     try:
         meta_text = META.review(
             reactions=[{"personality": r.personality, "reaction": r.reaction} for r in results],
             news=news_text,
-            **params,
+            **meta_params,      # <-- use meta_params here
         )
     except Exception as e:
         errors["META_REVIEW"] = str(e)

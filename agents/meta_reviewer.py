@@ -30,6 +30,9 @@ Style:
 - Use plain English, clear structure, short paragraphs.
 - Think like a policy briefing or executive summary.
 - Make it engaging and easy for a non-technical reader.
+
+Notice! 
+You are allowed to use MAXIMUM 1500 Characters!
 """
 
 class MetaReviewerAgent:

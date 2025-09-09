@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import ReactMarkdown from "react-markdown";
+// @ts-ignore
+import remarkGfm from "remark-gfm";
 
 // Mbitverse — White Panel Frontend with Graphics
 // Purpose: user pastes news, clicks Run, sees agent cards with icons
@@ -74,7 +77,7 @@ export default function MbitverseWhitePanel() {
     <div className="mx-auto max-w-7xl p-6 text-gray-900 font-sans bg-white">
       {/* Header */}
       <header className="mb-6 text-center">
-        <h1 className="text-3xl font-extrabold">🌐 Mbitverse Panel</h1>
+        <h1 className="text-3xl font-extrabold">🌐 MBTIverse Panel</h1>
         <p className="mt-1 text-sm text-gray-600">16 MBTI agents + Meta Reviewer — Visualized</p>
       </header>
 
@@ -112,8 +115,48 @@ export default function MbitverseWhitePanel() {
           {/* Meta Review */}
           {data.meta_review && (
             <div className="rounded-2xl border-2 border-black bg-white p-6 shadow-md">
-              <h2 className="mb-2 text-xl font-bold flex items-center gap-2">🧭 Meta Review</h2>
-              <p className="whitespace-pre-wrap leading-relaxed text-gray-800">{data.meta_review}</p>
+              <h2 className="mb-3 text-xl font-bold flex items-center gap-2">🧭 Meta Review</h2>
+              {(() => {
+                try {
+                  const trimmed = (data.meta_review || "").trim();
+                  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+                    const parsed = JSON.parse(trimmed) as Record<string, any>;
+                    const entries = Object.entries(parsed);
+                    return (
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {entries.map(([k, v]) => (
+                          <div key={k} className="rounded-xl border p-4">
+                            <div className="mb-2 flex items-center justify-between">
+                              <h3 className="font-semibold">{k}</h3>
+                              <span className="text-xs text-gray-500">{Array.isArray(v) ? `${v.length}` : typeof v}</span>
+                            </div>
+                            {Array.isArray(v) ? (
+                              <ul className="list-disc pl-5 space-y-1">
+                                {v.map((item: any, i: number) => (
+                                  <li key={i} className="text-sm">
+                                    {typeof item === "string" ? item : <pre className="whitespace-pre-wrap text-xs">{JSON.stringify(item, null, 2)}</pre>}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : typeof v === "object" ? (
+                              <pre className="whitespace-pre-wrap text-xs">{JSON.stringify(v, null, 2)}</pre>
+                            ) : (
+                              <p className="text-sm whitespace-pre-wrap">{String(v)}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  }
+                } catch (_) {}
+                return (
+                  <div className="prose prose-sm sm:prose-base max-w-none">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {data.meta_review as string}
+                    </ReactMarkdown>
+                  </div>
+                );
+              })()}
             </div>
           )}
 
@@ -160,7 +203,7 @@ export default function MbitverseWhitePanel() {
       )}
 
       <footer className="mt-10 text-center text-xs text-gray-500">
-        <p>© {new Date().getFullYear()} Mbitverse. Clean • White • Professional</p>
+        <p>© {new Date().getFullYear()} MBTIverse. Clean • White • Professional</p>
       </footer>
     </div>
   );
